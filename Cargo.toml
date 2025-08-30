@@ -1,0 +1,15 @@
+[package]
+name = "redscript-collections"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+smallvec = "2.0.0-alpha.11"
+indexmap = "2"
+
+[dependencies.red4ext-rs]
+git = "https://github.com/jac3km4/red4ext-rs"
+rev = "30286b1"
