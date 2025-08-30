@@ -1,23 +1,22 @@
-use std::{
-    cell::{Cell, RefCell},
-    rc::Rc,
-};
+use std::cell::{Cell, RefCell};
+use std::rc::Rc;
 
 use indexmap::IndexMap;
+use red4ext_rs::types::{IScriptable, RedString, Ref, Variant};
 use red4ext_rs::{
     ClassExport, Exportable, Plugin, ScriptClass, ScriptClassOps, SemVer, U16CStr, class_kind,
-    export_plugin_symbols, exports, methods,
-    types::{IScriptable, RedString, Ref, Variant},
-    wcstr,
+    export_plugin_symbols, exports, methods, wcstr,
 };
 use smallvec::SmallVec;
+
+mod version;
 
 pub struct RedscriptCollections;
 
 impl Plugin for RedscriptCollections {
     const AUTHOR: &'static U16CStr = wcstr!("jekky");
     const NAME: &'static U16CStr = wcstr!("redscript-collections");
-    const VERSION: SemVer = SemVer::new(0, 1, 0);
+    const VERSION: SemVer = SemVer::new(version::MAJOR, version::MINOR, version::PATCH);
 
     fn exports() -> impl Exportable {
         exports![
