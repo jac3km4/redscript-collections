@@ -8,7 +8,7 @@ A collections library for REDscript.
 
 Iterate over arrays with functional methods.
 
-```reds
+```swift
 let arr = [1, 2, 3, 4, 5];
 ArrayIter.New(arr).ForEach((val) -> FTLog(s"\(val)"));
 ```
@@ -17,7 +17,7 @@ ArrayIter.New(arr).ForEach((val) -> FTLog(s"\(val)"));
 
 Sort arrays in place.
 
-```reds
+```swift
 let arr = [3, 1, 4, 1, 5];
 SortArray(arr, Int32Comparator.New());
 ```
@@ -26,7 +26,7 @@ SortArray(arr, Int32Comparator.New());
 
 Hash map that preserves insertion order.
 
-```reds
+```swift
 let map = HashMap.New();
 map.Set("key", "value");
 let result = map.Get("key");
@@ -40,7 +40,7 @@ map.Iter().ForEach((entry) -> FTLog(s"\(entry)"));
 
 Ordered map sorted by keys.
 
-```reds
+```swift
 let map = BTreeMap.New(Int32Comparator.New());
 map.Set(2, "second");
 map.Set(1, "first");
