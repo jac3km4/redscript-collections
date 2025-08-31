@@ -10,7 +10,7 @@ Iterate over arrays with functional methods.
 
 ```reds
 let arr = [1, 2, 3, 4, 5];
-ArrayIter.New(arr).ForEach((val) => FTLog(s"\(val)"));
+ArrayIter.New(arr).ForEach((val) -> FTLog(s"\(val)"));
 ```
 
 ### SortArray
@@ -33,7 +33,7 @@ let result = map.Get("key");
 if result.defined {
     FTLog(s"Found: \(result.value)");
 }
-map.Iter().ForEach((entry) => FTLog(s"\(entry)"));
+map.Iter().ForEach((entry) -> FTLog(s"\(entry)"));
 ```
 
 ## BTreeMap
@@ -46,7 +46,7 @@ map.Set(2, "second");
 map.Set(1, "first");
 
 // Iterate in sorted order
-map.Iter().ForEach((entry) => FTLog(s"\(entry)"));
+map.Iter().ForEach((entry) -> FTLog(s"\(entry)"));
 
 // Custom comparator using On
 let tupleMap = BTreeMap.New(Int32Comparator.New().On((t: Tuple) -> t.first));
