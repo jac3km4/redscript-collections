@@ -12,7 +12,7 @@ indexmap = "2"
 
 [dependencies.red4ext-rs]
 git = "https://github.com/jac3km4/red4ext-rs"
-rev = "30286b1"
+rev = "45cd841"
 
 [lints.rust]
 warnings = "warn"

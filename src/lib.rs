@@ -24,6 +24,7 @@ impl Plugin for RedscriptCollections {
                 .methods(methods![
                     c"Get" => HashMapImpl::get,
                     c"Set" => HashMapImpl::set,
+                    c"HasKey" => HashMapImpl::has_key,
                     c"Iter" => HashMapImpl::iter,
                 ])
                 .build(),
@@ -37,6 +38,7 @@ impl Plugin for RedscriptCollections {
                 .methods(methods![
                     c"Get" => BTreeMapImpl::get,
                     c"Set" => BTreeMapImpl::set,
+                    c"HasKey" => BTreeMapImpl::has_key,
                     c"Iter" => BTreeMapImpl::iter,
                 ])
                 .static_methods(static_methods![

@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::rc::Rc;
 
-use red4ext_rs::types::{IScriptable, Ref, Variant};
+use red4ext_rs::types::{IScriptable, Ref, StaticArray, Variant};
 use red4ext_rs::{ScriptClass, ScriptClassOps, call, class_kind};
 
 use crate::util::Ordering;
@@ -39,6 +39,12 @@ impl BTreeMapImpl {
             .insert(Key::new(key, self.comparator.clone()), value);
     }
 
+    pub fn has_key(&self, key: Variant) -> bool {
+        self.inner
+            .borrow()
+            .contains_key(&Key::new(key, self.comparator.clone()))
+    }
+
     pub fn iter(&self) -> Ref<IScriptable> {
         BTreeMapIteratorImpl::new_ref_with(|this| {
             this.inner = Rc::new(self.inner.borrow().clone().into_iter().into());
@@ -52,7 +58,7 @@ impl BTreeMapImpl {
 unsafe impl ScriptClass for BTreeMapImpl {
     type Kind = class_kind::Native;
 
-    const NAME: &'static str = "Collections.BTreeMap.BTreeMapImpl";
+    const NAME: &'static str = "Collections.BTreeMap.MapImpl";
 }
 
 #[derive(Default, Clone)]
@@ -63,9 +69,11 @@ pub struct BTreeMapIteratorImpl {
 }
 
 impl BTreeMapIteratorImpl {
-    pub fn next(&self) -> Variant {
+    pub fn next(&self) -> StaticArray<Variant, 2> {
         let mut map = self.inner.borrow_mut();
-        map.next().map(|(_, v)| v).unwrap_or_default()
+        map.next()
+            .map(|(k, v)| StaticArray::from([k.variant.clone(), v.clone()]))
+            .unwrap_or_else(|| StaticArray::from([Variant::default(), Variant::default()]))
     }
 
     pub fn has_next(&self) -> bool {
@@ -76,7 +84,7 @@ impl BTreeMapIteratorImpl {
 unsafe impl ScriptClass for BTreeMapIteratorImpl {
     type Kind = class_kind::Native;
 
-    const NAME: &'static str = "Collections.BTreeMap.BTreeMapIteratorImpl";
+    const NAME: &'static str = "Collections.BTreeMap.MapIteratorImpl";
 }
 
 #[derive(Clone)]

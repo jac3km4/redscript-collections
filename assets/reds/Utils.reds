@@ -1,23 +1,33 @@
 module Collections.Utils
 
+/// Represents the result of a comparison between two values.
 public enum Ordering {
   Less = -1,
   Equal = 0,
   Greater = 1,
 }
 
+/// A comparator for values of type `A`.
 public abstract class Comparator<-A> {
+  /// Compares two values and returns an `Ordering`.
   public func Compare(lhs: A, rhs: A) -> Ordering;
 
-  public final func On<B>(f: (B) -> A) -> Comparator<B> {
-    return OnComparator.New(this, f);
-  }
+  /// Returns a new comparator that applies the given function to the left-hand side
+  /// value before comparing. It can be used to create comparators for more complex
+  /// types from simple scalar comparators.
+  ///
+  /// ### Example
+  /// ```
+  /// let comp = Int32Comparator.New();
+  /// let structComp = comp.On((x: Struct) => x.field);
+  /// ```
+  public final func On<B>(f: (B) -> A) -> Comparator<B> = OnComparator.New(this, f);
 
-  public final func Reverse() -> Comparator<A> {
-    return ReverseComparator.New(this);
-  }
+  /// Returns a new comparator that reverses the order of the elements.
+  public final func Reverse() -> Comparator<A> = ReverseComparator.New(this);
 }
 
+/// A comparator for values of type `Int32`.
 @deriveNew()
 public final class Int32Comparator extends Comparator<Int32> {
   func Compare(lhs: Int32, rhs: Int32) -> Ordering {
@@ -25,6 +35,7 @@ public final class Int32Comparator extends Comparator<Int32> {
   }
 }
 
+/// A comparator for values of type `String`.
 @deriveNew()
 public final class StringComparator extends Comparator<String> {
   func Compare(lhs: String, rhs: String) -> Ordering {
