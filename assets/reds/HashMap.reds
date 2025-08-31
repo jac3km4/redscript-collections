@@ -33,7 +33,7 @@ public struct Entry<K, V> {
 
 @deriveNew()
 final class HashMapIterator<V> extends Iter<V> {
-  public let impl: HashMapIteratorImpl;
+  let impl: HashMapIteratorImpl;
 
   func HasNext() -> Bool = this.impl.HasNext();
 
