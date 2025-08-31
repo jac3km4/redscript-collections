@@ -1,14 +1,14 @@
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
-
-use indexmap::IndexMap;
-use red4ext_rs::types::{IScriptable, RedString, Ref, Variant};
 use red4ext_rs::{
-    ClassExport, Exportable, Plugin, ScriptClass, ScriptClassOps, SemVer, U16CStr, class_kind,
-    export_plugin_symbols, exports, methods, wcstr,
+    ClassExport, Exportable, Plugin, SemVer, U16CStr, export_plugin_symbols, exports, methods,
+    static_methods, wcstr,
 };
-use smallvec::SmallVec;
 
+use crate::btree_map::{BTreeMapImpl, BTreeMapIteratorImpl};
+use crate::hash_map::{HashMapImpl, HashMapIteratorImpl};
+
+mod btree_map;
+mod hash_map;
+mod util;
 mod version;
 
 pub struct RedscriptCollections;
@@ -32,84 +32,25 @@ impl Plugin for RedscriptCollections {
                     c"Next" => HashMapIteratorImpl::next,
                     c"HasNext" => HashMapIteratorImpl::has_next,
                 ])
+                .build(),
+            ClassExport::<BTreeMapImpl>::builder()
+                .methods(methods![
+                    c"Get" => BTreeMapImpl::get,
+                    c"Set" => BTreeMapImpl::set,
+                    c"Iter" => BTreeMapImpl::iter,
+                ])
+                .static_methods(static_methods![
+                    c"New" => BTreeMapImpl::new_ref,
+                ])
+                .build(),
+            ClassExport::<BTreeMapIteratorImpl>::builder()
+                .methods(methods![
+                    c"Next" => BTreeMapIteratorImpl::next,
+                    c"HasNext" => BTreeMapIteratorImpl::has_next,
+                ])
                 .build()
         ]
     }
 }
 
 export_plugin_symbols!(RedscriptCollections);
-
-#[derive(Default, Clone)]
-#[repr(C)]
-struct HashMapImpl {
-    _base: IScriptable,
-    inner: Rc<RefCell<IndexMap<SmallVec<u8, 16>, Variant>>>,
-}
-
-impl HashMapImpl {
-    fn get(&self, key: Variant) -> Variant {
-        self.inner
-            .borrow()
-            .get(&key_as_bytes(key))
-            .cloned()
-            .unwrap_or_default()
-    }
-
-    fn set(&self, key: Variant, value: Variant) {
-        self.inner.borrow_mut().insert(key_as_bytes(key), value);
-    }
-
-    fn iter(&self) -> Ref<IScriptable> {
-        HashMapIteratorImpl::new_ref_with(|this| {
-            this.inner = self.inner.clone();
-        })
-        .unwrap()
-        .cast()
-        .unwrap()
-    }
-}
-
-unsafe impl ScriptClass for HashMapImpl {
-    type Kind = class_kind::Native;
-
-    const NAME: &'static str = "Collections.HashMap.HashMapImpl";
-}
-
-fn key_as_bytes(mut key: Variant) -> SmallVec<u8, 16> {
-    if let Some(str) = key.try_take::<RedString>() {
-        str.to_bytes().into()
-    } else {
-        key.as_bytes().unwrap_or_default().into()
-    }
-}
-
-#[derive(Default, Clone)]
-#[repr(C)]
-struct HashMapIteratorImpl {
-    _base: IScriptable,
-    inner: Rc<RefCell<IndexMap<SmallVec<u8, 16>, Variant>>>,
-    position: Cell<usize>,
-}
-
-impl HashMapIteratorImpl {
-    fn next(&self) -> Variant {
-        let map = self.inner.borrow();
-        let val = map
-            .get_index(self.position.get())
-            .map(|(_, v)| v.clone())
-            .unwrap_or_default();
-        self.position.set(self.position.get() + 1);
-        val
-    }
-
-    fn has_next(&self) -> bool {
-        let map = self.inner.borrow();
-        self.position.get() < map.len()
-    }
-}
-
-unsafe impl ScriptClass for HashMapIteratorImpl {
-    type Kind = class_kind::Native;
-
-    const NAME: &'static str = "Collections.HashMap.HashMapIteratorImpl";
-}
