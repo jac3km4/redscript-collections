@@ -17,7 +17,7 @@ pub struct HashMapImpl {
 impl HashMapImpl {
     pub fn get(&self, key: Variant) -> Variant {
         RefCell::borrow(&self.inner)
-            .get(&get_key_bytes(&key))
+            .get(get_key_bytes(&key))
             .cloned()
             .unwrap_or_default()
     }
@@ -27,7 +27,7 @@ impl HashMapImpl {
     }
 
     pub fn has_key(&self, key: Variant) -> bool {
-        RefCell::borrow(&self.inner).contains_key(&get_key_bytes(&key))
+        RefCell::borrow(&self.inner).contains_key(get_key_bytes(&key))
     }
 
     pub fn iter(&self) -> Ref<IScriptable> {
@@ -84,30 +84,29 @@ struct Key {
 }
 
 impl From<Variant> for Key {
-    fn from(value: Variant) -> Self {
-        let encoded = get_key_bytes(&value);
-        Self {
-            variant: value,
-            encoded,
-        }
+    fn from(variant: Variant) -> Self {
+        let encoded = get_key_bytes(&variant).into();
+        Self { variant, encoded }
     }
 }
 
-fn get_key_bytes(value: &Variant) -> SmallVec<u8, 16> {
+fn get_key_bytes(value: &Variant) -> &[u8] {
     if let Some(str) = value.try_access::<RedString>() {
-        str.to_bytes().into()
+        str.to_bytes()
     } else {
-        value.as_bytes().unwrap_or_default().into()
+        value.as_bytes().unwrap_or_default()
     }
 }
 
-impl Borrow<SmallVec<u8, 16>> for Key {
-    fn borrow(&self) -> &SmallVec<u8, 16> {
+impl Borrow<[u8]> for Key {
+    #[inline]
+    fn borrow(&self) -> &[u8] {
         &self.encoded
     }
 }
 
 impl PartialEq for Key {
+    #[inline]
     fn eq(&self, other: &Self) -> bool {
         self.encoded == other.encoded
     }
@@ -116,6 +115,7 @@ impl PartialEq for Key {
 impl Eq for Key {}
 
 impl std::hash::Hash for Key {
+    #[inline]
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.encoded.hash(state);
     }
