@@ -35,12 +35,72 @@ public final class Int32Comparator extends Comparator<Int32> {
   }
 }
 
+/// A comparator for values of type `Int64`.
+@deriveNew()
+public final class Int64Comparator extends Comparator<Int64> {
+  func Compare(lhs: Int64, rhs: Int64) -> Ordering {
+    return lhs < rhs ? Ordering.Less : lhs > rhs ? Ordering.Greater : Ordering.Equal;
+  }
+}
+
+/// A comparator for values of type `Uint32`.
+@deriveNew()
+public final class Uint32Comparator extends Comparator<Uint32> {
+  func Compare(lhs: Uint32, rhs: Uint32) -> Ordering {
+    return lhs < rhs ? Ordering.Less : lhs > rhs ? Ordering.Greater : Ordering.Equal;
+  }
+}
+
+/// A comparator for values of type `Uint64`.
+@deriveNew()
+public final class Uint64Comparator extends Comparator<Uint64> {
+  func Compare(lhs: Uint64, rhs: Uint64) -> Ordering {
+    return lhs < rhs ? Ordering.Less : lhs > rhs ? Ordering.Greater : Ordering.Equal;
+  }
+}
+
+/// A comparator for values of type `Float`.
+@deriveNew()
+public final class FloatComparator extends Comparator<Float> {
+  func Compare(lhs: Float, rhs: Float) -> Ordering {
+    return lhs < rhs ? Ordering.Less : lhs > rhs ? Ordering.Greater : Ordering.Equal;
+  }
+}
+
+/// A comparator for values of type `Double`.
+@deriveNew()
+public final class DoubleComparator extends Comparator<Double> {
+  func Compare(lhs: Double, rhs: Double) -> Ordering {
+    return lhs < rhs ? Ordering.Less : lhs > rhs ? Ordering.Greater : Ordering.Equal;
+  }
+}
+
 /// A comparator for values of type `String`.
 @deriveNew()
 public final class StringComparator extends Comparator<String> {
   func Compare(lhs: String, rhs: String) -> Ordering {
     let result = UnicodeStringCompare(lhs, rhs);
     return result < 0 ? Ordering.Less : result > 0 ? Ordering.Greater : Ordering.Equal;
+  }
+}
+
+/// A comparator for arrays.
+@deriveNew()
+public final class ArrayComparator<A> extends Comparator<[A]> {
+  let elementComparator: Comparator<A>;
+
+  func Compare(lhs: [A], rhs: [A]) -> Ordering {
+    let lhsSize = ArraySize(lhs);
+    let rhsSize = ArraySize(rhs);
+    let i = Min(lhsSize, rhsSize) - 1;
+    while i >= 0 {
+      let ordering = this.elementComparator.Compare(lhs[i], rhs[i]);
+      if ordering != Ordering.Equal {
+        return ordering;
+      }
+      i -= 1;
+    }
+    return lhsSize < rhsSize ? Ordering.Less : lhsSize > rhsSize ? Ordering.Greater : Ordering.Equal;
   }
 }
 

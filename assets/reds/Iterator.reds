@@ -34,6 +34,12 @@ public abstract class Iter<A> {
   /// ```
   public func Filter(predicate: (A) -> Bool) -> Iter<A> = FilterIter.New(this, predicate);
 
+  /// Takes the first `n` elements from the iterator.
+  public func Take(n: Int32) -> Iter<A> = TakeIter.New(this, n);
+
+  /// Skips the first `n` elements from the iterator.
+  public func Skip(n: Int32) -> Iter<A> = SkipIter.New(this, n);
+
   /// Finds the first element in the iterator that matches the provided predicate.
   ///
   /// ### Example
@@ -121,5 +127,34 @@ final class FilterIter<A> extends Iter<A> {
   }
 
   func Next() -> A = this.current;
+}
+
+@deriveNew()
+final class TakeIter<A> extends Iter<A> {
+  let inner: Iter<A>;
+  let remaining: Int32;
+
+  func HasNext() -> Bool = this.remaining > 0 && this.inner.HasNext();
+
+  func Next() -> A {
+    this.remaining -= 1;
+    return this.inner.Next();
+  }
+}
+
+@deriveNew()
+final class SkipIter<A> extends Iter<A> {
+  let inner: Iter<A>;
+  let remaining: Int32;
+
+  func HasNext() -> Bool {
+    while this.remaining > 0 && this.inner.HasNext() {
+      this.inner.Next();
+      this.remaining -= 1;
+    }
+    return this.inner.HasNext();
+  }
+
+  func Next() -> A = this.inner.Next();
 }
 

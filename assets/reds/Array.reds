@@ -4,7 +4,7 @@ import Collections.Utils.*
 import Collections.Iter.*
 
 /// An array iterator.
-public class ArrayIter<A> extends Iter<A> {
+public final class ArrayIter<A> extends Iter<A> {
   let array: script_ref<[A]>;
   let index: Int32;
 
