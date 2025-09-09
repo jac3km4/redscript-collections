@@ -92,13 +92,14 @@ public final class ArrayComparator<A> extends Comparator<[A]> {
   func Compare(lhs: [A], rhs: [A]) -> Ordering {
     let lhsSize = ArraySize(lhs);
     let rhsSize = ArraySize(rhs);
-    let i = Min(lhsSize, rhsSize) - 1;
-    while i >= 0 {
-      let ordering = this.elementComparator.Compare(lhs[i], rhs[i]);
-      if ordering != Ordering.Equal {
-        return ordering;
+    let last = Min(lhsSize, rhsSize);
+    let i = 0;
+    while i < last {
+      let ord = this.elementComparator.Compare(lhs[i], rhs[i]);
+      if ord != Ordering.Equal {
+        return ord;
       }
-      i -= 1;
+      i += 1;
     }
     return lhsSize < rhsSize ? Ordering.Less : lhsSize > rhsSize ? Ordering.Greater : Ordering.Equal;
   }
