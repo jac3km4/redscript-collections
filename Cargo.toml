@@ -1,6 +1,6 @@
 [package]
 name = "redscript-collections"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2024"
 
 [lib]
@@ -12,7 +12,7 @@ indexmap = "2"
 
 [dependencies.red4ext-rs]
 git = "https://github.com/jac3km4/red4ext-rs"
-rev = "45cd841"
+rev = "943c3b1"
 
 [lints.rust]
 warnings = "warn"
@@ -42,3 +42,8 @@ explicit_deref_methods = "warn"
 explicit_iter_loop = "warn"
 inefficient_to_string = "warn"
 match_bool = "warn"
+
+[profile.release]
+codegen-units = 1
+panic = 'abort'
+lto = true

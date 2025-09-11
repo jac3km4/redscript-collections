@@ -233,7 +233,7 @@ dependencies = [
 [[package]]
 name = "red4ext-rs"
 version = "0.10.0"
-source = "git+https://github.com/jac3km4/red4ext-rs?rev=45cd841#45cd841bc8ef0b9c95153e9118fcfa125d6e57ac"
+source = "git+https://github.com/jac3km4/red4ext-rs?rev=943c3b1#943c3b1f9dee66ac0057f96a532744c2b4110700"
 dependencies = [
  "bindgen",
  "cmake",
@@ -247,7 +247,7 @@ dependencies = [
 
 [[package]]
 name = "redscript-collections"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "indexmap",
  "red4ext-rs",
